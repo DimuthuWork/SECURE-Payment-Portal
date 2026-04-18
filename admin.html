@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Ultra Secure Payment Portal</title>
+     <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <h1>🛡️ Admin Panel</h1>
+                <p>Ultra Secure Payment Portal</p>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">
+                        <span class="icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#invoices" class="nav-link" onclick="showSection('invoices')">
+                        <span class="icon">📋</span>
+                        Invoices
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a href="#verification" class="nav-link" onclick="showSection('verification')">
+                        <span class="icon">✅</span>
+                        Verification
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link" onclick="showSection('settings')">
+                        <span class="icon">⚙️</span>
+                        Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/" class="nav-link">
+                        <span class="icon">🏠</span>
+                        Back to Portal
+                    </a>
+                </li> -->
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section">
+                <div class="header">
+                    <h2>
+                        Admin Dashboard
+                        <span class="live-indicator">
+                            <span class="live-dot"></span>
+                            Live
+                        </span>
+                    </h2>
+                    <button class="refresh-btn" onclick="refreshData()">
+                        🔄 Refresh
+                    </button>
+                </div>
+                
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card invoices">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-number" id="totalInvoices">0</div>
+                                <div class="stat-label">Total Invoices</div>
+                            </div>
+                            <div class="stat-icon">📋</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card verified">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-number" id="verifiedInvoices">0</div>
+                                <div class="stat-label">Verified Invoices</div>
+                            </div>
+                            <div class="stat-icon">✅</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card pending">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-number" id="pendingInvoices">0</div>
+                                <div class="stat-label">Pending Invoices</div>
+                            </div>
+                            <div class="stat-icon">⏳</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card blocked">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-number" id="blockedAttempts">0</div>
+                                <div class="stat-label">Blocked Attempts</div>
+                            </div>
+                            <div class="stat-icon">🚫</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Recent Invoices (Full Width) -->
+                    <div class="invoices-section" style="grid-column: 1 / -1;">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                📋 Recent Invoices
+                            </h3>
+                        </div>
+                        
+                        <table class="invoices-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoicesTableBody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions Section (Below Invoice Table) -->
+                <div class="dashboard-grid" style="margin-top: 30px;">
+                    <!-- Quick Actions Panel -->
+                    <div class="verification-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                🔍 Quick Actions
+                            </h3>
+                        </div>
+                        
+                        <div class="verification-form">
+                            <div class="form-group">
+                                <label for="adminInvoiceInput">Quick Invoice Lookup:</label>
+                                <input type="text" id="adminInvoiceInput" placeholder="INV-XXXXX-XXXXX-XX" style="text-transform: uppercase;">
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="verifyInvoiceAdmin()" style="width: 100%;">
+                                🔍 Lookup Invoice
+                            </button>
+                        </div>
+                        
+                        <div id="verificationResult"></div>
+                        
+                        <!-- Quick Stats -->
+                        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h5 style="margin-bottom: 10px; color: #555;">📊 Quick Stats</h5>
+                            <div style="font-size: 0.9rem;">
+                                <div>🟢 Approved: <span id="quickApprovedCount">0</span></div>
+                                <div>🟡 Pending: <span id="quickPendingCount">0</span></div>
+                                <div>🔴 Rejected: <span id="quickRejectedCount">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity Panel -->
+                    <div class="verification-section">
+                        <div class="section-header">
+                            <h3 class="section-title">
+                                🔔 Recent Activity
+                            </h3>
+                        </div>
+                        
+                        <div class="recent-activity" id="recentActivity">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Invoices Section -->
+            <div id="invoices-section" class="hidden">
+                <div class="header">
+                    <h2>📋 All Invoices</h2>
+                    <button class="refresh-btn" onclick="refreshData()">
+                        🔄 Refresh
+                    </button>
+                </div>
+                
+                <div class="invoices-section">
+                    <div class="section-header">
+                        <h3 class="section-title">All Generated Invoices</h3>
+                    </div>
+                    
+                    <table class="invoices-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Customer Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Amount (Rs.)</th>
+                                <th>Status</th>
+                                <th>Generated Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allInvoicesTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Verification Section -->
+            <div id="verification-section" class="hidden">
+                <div class="header">
+                    <h2>✅ Invoice Verification Center</h2>
+                </div>
+                
+                <div class="verification-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Manual Invoice Verification</h3>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>ℹ️ How it works:</strong><br>
+                        1. User generates invoice on payment portal<br>
+                        2. Invoice appears in admin dashboard<br>
+                        3. User provides invoice number for verification<br>
+                        4. Admin manually verifies and approves<br>
+                        5. User can proceed with payment
+                    </div>
+                    
+                    <div class="verification-form">
+                        <div class="form-group">
+                            <label for="verifyInvoiceInput">Invoice Number to Verify:</label>
+                            <input type="text" id="verifyInvoiceInput" placeholder="Enter invoice number" style="text-transform: uppercase;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" onclick="searchInvoice()" style="flex: 1;">
+                                🔍 Search Invoice
+                            </button>
+                            <button class="btn btn-success" onclick="approveInvoice()" style="flex: 1;" disabled id="approveBtn">
+                                ✅ Approve
+                            </button>
+                            <button class="btn btn-danger" onclick="rejectInvoice()" style="flex: 1;" disabled id="rejectBtn">
+                                ❌ Reject
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="invoiceDetails"></div>
+                </div>
+            </div>
+            
+            <!-- Settings Section -->
+            <div id="settings-section" class="hidden">
+                <div class="header">
+                    <h2>⚙️ Admin Settings</h2>
+                </div>
+                
+                <div class="verification-section">
+                    <div class="section-header">
+                        <h3 class="section-title">System Configuration</h3>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>🔧 Admin Configuration Panel</strong><br>
+                        Configure system settings and security parameters.
+                    </div>
+                    
+                    <div class="verification-form">
+                        <div class="form-group">
+                            <label>Auto-refresh Interval (seconds):</label>
+                            <input type="number" id="refreshInterval" value="5" min="1" max="60">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Maximum Invoice Display:</label>
+                            <input type="number" id="maxDisplay" value="10" min="5" max="100">
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            💾 Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Details Modal -->
+    <div id="invoiceModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Invoice Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin Dashboard JavaScript
+        let invoicesData = [];
+        let activityLog = [];
+        let refreshInterval = 5000; // 5 seconds
+        let autoRefreshTimer;
+
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            startAutoRefresh();
+        });
+
+        // Show/Hide sections
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('[id$="-section"]').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Fetch data from server
+        async function fetchInvoices() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/invoices`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    invoicesData = result.data;
+                    updateDashboard();
+                }
+            } catch (error) {
+                console.error('Error fetching invoices:', error);
+                addActivity('Failed to fetch invoices', 'error');
+            }
+        }
+
+        // Update dashboard with latest data
+        function updateDashboard() {
+            updateStatistics();
+            updateInvoicesTable();
+            updateAllInvoicesTable();
+        }
+
+        // Update statistics cards
+        function updateStatistics() {
+            const total = invoicesData.length;
+            const verified = invoicesData.filter(inv => inv.status === 'verified' || inv.status === 'approved').length;
+            const pending = invoicesData.filter(inv => inv.status === 'pending' || inv.status === 'verified').length;
+            const approved = invoicesData.filter(inv => inv.status === 'approved').length;
+            const rejected = invoicesData.filter(inv => inv.status === 'rejected').length;
+            const blocked = 0; // Can be enhanced with actual blocked attempts data
+
+            document.getElementById('totalInvoices').textContent = total;
+            document.getElementById('verifiedInvoices').textContent = verified;
+            document.getElementById('pendingInvoices').textContent = pending;
+            document.getElementById('blockedAttempts').textContent = blocked;
+            
+            // Update quick stats
+            document.getElementById('quickApprovedCount').textContent = approved;
+            document.getElementById('quickPendingCount').textContent = pending;
+            document.getElementById('quickRejectedCount').textContent = rejected;
+        }
+
+        // Update recent invoices table
+        function updateInvoicesTable() {
+            const tbody = document.getElementById('invoicesTableBody');
+            const recentInvoices = invoicesData.slice(0, 10); // Show last 10
+
+            tbody.innerHTML = recentInvoices.map(invoice => {
+                const actionButtons = getActionButtons(invoice);
+                return `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold;">${invoice.invoiceNumber}</td>
+                    <td>${invoice.customerName}</td>
+                    <td>${invoice.customerEmail}</td>
+                    <td>Rs. ${invoice.paymentAmount.toFixed(2)}</td>
+                    <td><span class="status-badge status-${invoice.status}">${invoice.status.toUpperCase()}</span></td>
+                    <td>${new Date(invoice.timestamp).toLocaleTimeString()}</td>
+                    <td>${actionButtons}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Generate action buttons based on invoice status
+        function getActionButtons(invoice) {
+            const status = invoice.status;
+            const invoiceNumber = invoice.invoiceNumber;
+            
+            if (status === 'approved') {
+                return `
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-view" onclick="viewInvoiceDetails('${invoiceNumber}')">View</button>
+                        <span style="color: #28a745; font-size: 0.8rem;">✅ Approved</span>
+                    </div>
+                `;
+            } else if (status === 'rejected') {
+                return `
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-view" onclick="viewInvoiceDetails('${invoiceNumber}')">View</button>
+                        <span style="color: #dc3545; font-size: 0.8rem;">❌ Rejected</span>
+                    </div>
+                `;
+            } else if (status === 'verified' || status === 'pending') {
+                return `
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-approve" onclick="quickApprove('${invoiceNumber}')">Approve</button>
+                        <button class="btn-sm btn-reject" onclick="quickReject('${invoiceNumber}')">Reject</button>
+                        <button class="btn-sm btn-view" onclick="viewInvoiceDetails('${invoiceNumber}')">View</button>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="action-buttons">
+                        <button class="btn-sm btn-view" onclick="viewInvoiceDetails('${invoiceNumber}')">View</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Quick approve function
+        async function quickApprove(invoiceNumber) {
+            if (!confirm(`Are you sure you want to approve invoice ${invoiceNumber}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/approve-invoice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ invoiceNumber })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    addActivity(`Invoice ${invoiceNumber} approved`, 'success');
+                    refreshData(); // Refresh to show updated status
+                    
+                    // Show success notification
+                    showNotification(`✅ Invoice ${invoiceNumber} approved successfully!`, 'success');
+                } else {
+                    throw new Error(result.message || 'Failed to approve invoice');
+                }
+
+            } catch (error) {
+                addActivity(`Failed to approve invoice ${invoiceNumber}`, 'error');
+                showNotification('❌ ' + error.message, 'error');
+            }
+        }
+
+        // Quick reject function
+        async function quickReject(invoiceNumber) {
+            if (!confirm(`Are you sure you want to reject invoice ${invoiceNumber}?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/reject-invoice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ invoiceNumber })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    addActivity(`Invoice ${invoiceNumber} rejected`, 'error');
+                    refreshData(); // Refresh to show updated status
+                    
+                    // Show success notification
+                    showNotification(`❌ Invoice ${invoiceNumber} rejected`, 'error');
+                } else {
+                    throw new Error(result.message || 'Failed to reject invoice');
+                }
+
+            } catch (error) {
+                addActivity(`Failed to reject invoice ${invoiceNumber}`, 'error');
+                showNotification('❌ ' + error.message, 'error');
+            }
+        }
+
+        // Show notification function
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = message;
+            
+            // Add CSS for animation
+            if (!document.getElementById('notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Update all invoices table
+        function updateAllInvoicesTable() {
+            const tbody = document.getElementById('allInvoicesTableBody');
+
+            tbody.innerHTML = invoicesData.map(invoice => {
+                const actionButtons = getActionButtons(invoice);
+                return `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold;">${invoice.invoiceNumber}</td>
+                    <td>${invoice.customerName}</td>
+                    <td>${invoice.customerEmail}</td>
+                    <td>${invoice.customerPhone}</td>
+                    <td>Rs. ${invoice.paymentAmount.toFixed(2)}</td>
+                    <td><span class="status-badge status-${invoice.status}">${invoice.status.toUpperCase()}</span></td>
+                    <td>${new Date(invoice.timestamp).toLocaleString()}</td>
+                    <td>${actionButtons}</td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Manual invoice verification (now just lookup)
+        async function verifyInvoiceAdmin() {
+            const invoiceNumber = document.getElementById('adminInvoiceInput').value.trim().toUpperCase();
+            const resultDiv = document.getElementById('verificationResult');
+
+            if (!invoiceNumber) {
+                showAlert(resultDiv, 'Please enter an invoice number', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/invoice/${invoiceNumber}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const invoice = result.data;
+                    const actionButtons = getActionButtons(invoice);
+                    
+                    showAlert(resultDiv, `
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <h4>📋 Invoice Details</h4>
+                            <strong>Invoice #:</strong> ${invoice.invoiceNumber}<br>
+                            <strong>Customer:</strong> ${invoice.customerName}<br>
+                            <strong>Email:</strong> ${invoice.customerEmail}<br>
+                            <strong>Phone:</strong> ${invoice.customerPhone}<br>
+                            <strong>Amount:</strong> Rs. ${invoice.paymentAmount.toFixed(2)}<br>
+                            <strong>Status:</strong> <span class="status-badge status-${invoice.status}">${invoice.status.toUpperCase()}</span><br>
+                            <strong>Generated:</strong> ${new Date(invoice.timestamp).toLocaleString()}<br>
+                            <div style="margin-top: 10px;">
+                                ${actionButtons}
+                            </div>
+                        </div>
+                    `, 'info');
+                    
+                    addActivity(`Invoice ${invoiceNumber} looked up by admin`, 'success');
+                    document.getElementById('adminInvoiceInput').value = '';
+                } else {
+                    showAlert(resultDiv, '❌ ' + result.message, 'danger');
+                    addActivity(`Failed lookup attempt for ${invoiceNumber}`, 'error');
+                }
+
+            } catch (error) {
+                showAlert(resultDiv, '❌ Error looking up invoice: ' + error.message, 'danger');
+            }
+        }
+
+        // Search for specific invoice
+        async function searchInvoice() {
+            const invoiceNumber = document.getElementById('verifyInvoiceInput').value.trim().toUpperCase();
+            const detailsDiv = document.getElementById('invoiceDetails');
+
+            if (!invoiceNumber) {
+                showAlert(detailsDiv, 'Please enter an invoice number', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/invoice/${invoiceNumber}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const invoice = result.data;
+                    detailsDiv.innerHTML = `
+                        <div class="alert alert-info">
+                            <h4>📋 Invoice Details</h4>
+                            <strong>Invoice #:</strong> ${invoice.invoiceNumber}<br>
+                            <strong>Customer:</strong> ${invoice.customerName}<br>
+                            <strong>Email:</strong> ${invoice.customerEmail}<br>
+                            <strong>Phone:</strong> ${invoice.customerPhone}<br>
+                            <strong>Amount:</strong> Rs. ${invoice.paymentAmount.toFixed(2)}<br>
+                            <strong>Status:</strong> <span class="status-badge status-${invoice.status}">${invoice.status.toUpperCase()}</span><br>
+                            <strong>Generated:</strong> ${new Date(invoice.timestamp).toLocaleString()}
+                        </div>
+                    `;
+                    
+                    // Enable action buttons
+                    document.getElementById('approveBtn').disabled = false;
+                    document.getElementById('rejectBtn').disabled = false;
+                } else {
+                    showAlert(detailsDiv, '❌ ' + result.message, 'danger');
+                    document.getElementById('approveBtn').disabled = true;
+                    document.getElementById('rejectBtn').disabled = true;
+                }
+
+            } catch (error) {
+                showAlert(detailsDiv, '❌ Error searching invoice: ' + error.message, 'danger');
+            }
+        }
+
+        // Approve invoice
+        async function approveInvoice() {
+            const invoiceNumber = document.getElementById('verifyInvoiceInput').value.trim().toUpperCase();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/approve-invoice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ invoiceNumber })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(document.getElementById('invoiceDetails'), '✅ Invoice approved successfully!', 'success');
+                    addActivity(`Invoice ${invoiceNumber} approved by admin`, 'success');
+                    document.getElementById('verifyInvoiceInput').value = '';
+                    document.getElementById('approveBtn').disabled = true;
+                    document.getElementById('rejectBtn').disabled = true;
+                    refreshData();
+                } else {
+                    showAlert(document.getElementById('invoiceDetails'), '❌ ' + result.message, 'danger');
+                }
+
+            } catch (error) {
+                showAlert(document.getElementById('invoiceDetails'), '❌ Error approving invoice: ' + error.message, 'danger');
+            }
+        }
+
+        // Reject invoice
+        async function rejectInvoice() {
+            const invoiceNumber = document.getElementById('verifyInvoiceInput').value.trim().toUpperCase();
+            
+            if (!confirm('Are you sure you want to reject this invoice?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/reject-invoice`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ invoiceNumber })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(document.getElementById('invoiceDetails'), '❌ Invoice rejected', 'danger');
+                    addActivity(`Invoice ${invoiceNumber} rejected by admin`, 'error');
+                    document.getElementById('verifyInvoiceInput').value = '';
+                    document.getElementById('approveBtn').disabled = true;
+                    document.getElementById('rejectBtn').disabled = true;
+                    refreshData();
+                } else {
+                    showAlert(document.getElementById('invoiceDetails'), '❌ ' + result.message, 'danger');
+                }
+
+            } catch (error) {
+                showAlert(document.getElementById('invoiceDetails'), '❌ Error rejecting invoice: ' + error.message, 'danger');
+            }
+        }
+
+        // View invoice details
+        function viewInvoiceDetails(invoiceNumber) {
+            const invoice = invoicesData.find(inv => inv.invoiceNumber === invoiceNumber);
+            if (invoice) {
+                showInvoiceModal(invoice);
+            }
+        }
+
+        // Show invoice modal
+        function showInvoiceModal(invoice) {
+            const modalBody = document.getElementById('modalBody');
+            const statusClass = `status-${invoice.status}`;
+            
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">Invoice Number:</span>
+                    <span class="detail-value invoice-number-display">${invoice.invoiceNumber}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Customer Name:</span>
+                    <span class="detail-value">${invoice.customerName}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email Address:</span>
+                    <span class="detail-value">${invoice.customerEmail}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone Number:</span>
+                    <span class="detail-value">${invoice.customerPhone}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Payment Amount:</span>
+                    <span class="detail-value amount-display">Rs. ${invoice.paymentAmount.toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">
+                        <span class="status-badge ${statusClass}">${invoice.status.toUpperCase()}</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Generated Time:</span>
+                    <span class="detail-value">${new Date(invoice.timestamp).toLocaleString()}</span>
+                </div>
+                ${invoice.approvedTime ? `
+                <div class="detail-row">
+                    <span class="detail-label">Approved Time:</span>
+                    <span class="detail-value">${new Date(invoice.approvedTime).toLocaleString()}</span>
+                </div>
+                ` : ''}
+                ${invoice.transactionId ? `
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID:</span>
+                    <span class="detail-value">${invoice.transactionId}</span>
+                </div>
+                ` : ''}
+                ${invoice.paymentTimestamp ? `
+                <div class="detail-row">
+                    <span class="detail-label">Payment Time:</span>
+                    <span class="detail-value">${new Date(invoice.paymentTimestamp).toLocaleString()}</span>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('invoiceModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('invoiceModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('invoiceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Add activity to log
+        function addActivity(message, type = 'info') {
+            const activity = {
+                message,
+                type,
+                timestamp: new Date()
+            };
+            
+            activityLog.unshift(activity);
+            activityLog = activityLog.slice(0, 10); // Keep only last 10
+            
+            updateActivityLog();
+        }
+
+        // Update activity log display
+        function updateActivityLog() {
+            const container = document.getElementById('recentActivity');
+            
+            container.innerHTML = activityLog.map(activity => `
+                <div class="activity-item">
+                    <span class="activity-time">${activity.timestamp.toLocaleTimeString()}</span>
+                    ${activity.message}
+                </div>
+            `).join('');
+        }
+
+        // Show alert message
+        function showAlert(container, message, type) {
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        // Refresh all data
+        async function refreshData() {
+            addActivity('Refreshing dashboard data...', 'info');
+            await fetchInvoices();
+            addActivity('Dashboard data refreshed', 'success');
+        }
+
+        // Auto refresh functionality
+        function startAutoRefresh() {
+            autoRefreshTimer = setInterval(refreshData, refreshInterval);
+        }
+
+        function stopAutoRefresh() {
+            clearInterval(autoRefreshTimer);
+        }
+
+        // Save settings
+        function saveSettings() {
+            const newInterval = parseInt(document.getElementById('refreshInterval').value) * 1000;
+            const maxDisplay = parseInt(document.getElementById('maxDisplay').value);
+            
+            refreshInterval = newInterval;
+            
+            // Restart auto refresh with new interval
+            stopAutoRefresh();
+            startAutoRefresh();
+            
+            addActivity(`Settings saved: Refresh interval ${newInterval/1000}s, Max display ${maxDisplay}`, 'success');
+            alert('⚙️ Settings saved successfully!');
+        }
+
+        // Format invoice number input
+        document.getElementById('adminInvoiceInput').addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+
+        document.getElementById('verifyInvoiceInput').addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>
